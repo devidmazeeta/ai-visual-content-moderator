@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result - AI Visual Content Moderator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h2>🧠 AI Image Analysis Result</h2>
+
+    <img src="{{ image_url }}" alt="Uploaded Image" width="400"><br><br>
+
+    <h3>🖼️ Basic Info</h3>
+    <ul>
+        <li><strong>Filename:</strong> {{ analysis.filename }}</li>
+        <li><strong>Format:</strong> {{ analysis.format }}</li>
+        <li><strong>Size:</strong> {{ analysis.size }}</li>
+        <li><strong>Mode:</strong> {{ analysis.mode }}</li>
+    </ul>
+
+    <h3>🔍 Object Detection</h3>
+    {% if analysis.objects %}
+    <ul>
+        {% for obj in analysis.objects %}
+        <li>
+            <strong>{{ obj.name }}</strong> at
+            [x: {{ obj.location.x }}, y: {{ obj.location.y }}, w: {{ obj.location.w }}, h: {{ obj.location.h }}]
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No objects detected.</p>
+    {% endif %}
+
+    <h3>🏷️ Tags</h3>
+    {% if analysis.tags %}
+    <ul>
+        {% for tag in analysis.tags %}
+        <li>{{ tag.name }} ({{ tag.confidence }}%)</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No tags available.</p>
+    {% endif %}
+
+    <h3>🏞️ Scene & Landmark Recognition</h3>
+    {% if analysis.landmarks %}
+    <ul>
+        {% for landmark in analysis.landmarks %}
+        <li>Landmark: {{ landmark.name }} ({{ landmark.confidence }}%)</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if analysis.scenes %}
+    <ul>
+        {% for scene in analysis.scenes %}
+        <li>Scene: {{ scene.name }} ({{ scene.confidence }}%)</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h3>🚫 Content Moderation</h3>
+    <ul>
+        <li>Is Adult Content: {{ analysis.moderation.is_adult_content }} (Confidence: {{ analysis.moderation.adult_score }}%)</li>
+        <li>Is Racy Content: {{ analysis.moderation.is_racy_content }} (Confidence: {{ analysis.moderation.racy_score }}%)</li>
+        <li>Is Gory Content: {{ analysis.moderation.is_gory_content }} (Confidence: {{ analysis.moderation.gore_score }}%)</li>
+    </ul>
+
+    <h3>🎨 Color & Theme</h3>
+    <ul>
+        <li>Dominant Background Color: {{ analysis.colors.background }}</li>
+        <li>Dominant Foreground Color: {{ analysis.colors.foreground }}</li>
+        <li>Accent Color: <span style="background-color: {{ analysis.colors.accent }}; padding: 2px 10px; border-radius: 5px;">{{ analysis.colors.accent }}</span></li>
+        <li>Dominant Colors: {{ analysis.colors.dominant_colors | join(', ') }}</li>
+    </ul>
+
+    <form action="{{ url_for('logout') }}" method="GET">
+        <button style="background-color: #ff4d4d;">Logout</button>
+    </form>
+</div>
+</body>
+</html>
